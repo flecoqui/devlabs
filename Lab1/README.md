@@ -2,19 +2,16 @@
 
 Dev environment Lab
 
-Overview
+## Overview
 
----------
 This github repository folder contains the Dev environment Lab.  
 
-The Lab
+## The Lab
 
----------
 to be completed
 
-Prerequisites
+## Prerequisites
 
---------------
 You need to install the following pre-requisite on your machine
 
 1. Install and configure [Docker](https://www.docker.com/get-started) for your operating system.
@@ -41,4 +38,3 @@ You need to install the following pre-requisite on your machine
 
 4. Install Git on your machine following the steps [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)   
 
-  

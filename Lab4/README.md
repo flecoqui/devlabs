@@ -2,19 +2,16 @@
 
 FastAPI Lab
 
-Overview
+## Overview
 
----------
 This github repository folder contains the FastAPI Lab.  
 
-The Lab
+## The Lab
 
----------
 to be completed
 
-Prerequisites
+## Prerequisites
 
---------------
 You need to install the following pre-requisite on your machine
 
 1. Install and configure [Docker](https://www.docker.com/get-started) for your operating system.

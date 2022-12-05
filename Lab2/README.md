@@ -2,19 +2,16 @@
 
 Azure (Azure Portal, Azure Active Directory, Azure CLI, ARM template, Cognitive Services,..) Lab
 
-Overview
+## Overview
 
----------
 This github repository folder contains the Azure (Azure Portal, Azure Active Directory, Azure CLI, ARM template, Cognitive Services,..) Lab.  
 
-The Lab
+## The Lab
 
----------
 to be completed
 
-Prerequisites
+## Prerequisites
 
---------------
 You need to install the following pre-requisite on your machine
 
 1. Install and configure [Docker](https://www.docker.com/get-started) for your operating system.
