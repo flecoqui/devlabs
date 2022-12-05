@@ -1,20 +1,16 @@
-# Azure Software Engineering Labs
+# Docker & Kubernetes Lab
 
-Azure Software Engineering Labs
+Docker & Kubernetes Lab
 
 Overview
 
 ---------
-This github repository contains several Labs associated with Azure Software Engineering.  
+This github repository folder contains the Docker & Kubernetes Lab.  
 
-The Labs
+The Lab
 
 ---------
-Below the list of Labs:  
-    - **[Lab 1](./Lab1/README.md)**: Dev environment (Git, Visual Studio Code, Azure CLI, Docker, kubectl)</p>
-    - **[Lab 2](./Lab2/README.md)**: Azure (Azure Portal, Azure Active Directory, Azure CLI, ARM template, Cognitive Services,...) </p>
-    - **[Lab 3](./Lab3/README.md)**: Docker & Kubernetes</p>
-    - **[Lab 4](./Lab4/README.md)**: FastAPI</p>
+to be completed
 
 Prerequisites
 
@@ -45,11 +41,3 @@ You need to install the following pre-requisite on your machine
 
 4. Install Git on your machine following the steps [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)   
 
-Next steps
-
------------
-
-Those Azure Software Engineering Labs could be extended with the following labs:  
-
-1. Azure DevOps Pipelines  
-2. Github Action  
