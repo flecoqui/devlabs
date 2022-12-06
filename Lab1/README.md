@@ -221,7 +221,7 @@ You need to install the following pre-requisite on your machine
 
 #### Using the dev container for all the labs
 
-As most of the subsequent labs could be run from the dev container, if you copy the folder '\git\devlabs\Lab1\.devcontainer' into '\git\devlabs', the same dev container will be available for all the labs.
+As most of the subsequent labs could be run from the dev container, if you copy the folder '\git\devlabs\Lab1\\.devcontainer' into '\git\devlabs', the same dev container will be available for all the labs.
 
 1. Launch Visual Studio Code in the folder where you stored the devlabs repository
 
