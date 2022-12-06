@@ -179,9 +179,9 @@ You need to install the following pre-requisite on your machine
 
 3. Install the [Remote Development extension pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
-#### Using devcontainer
+#### Using dev container
 
-1. Launch Visual Studio Code in the folder where you stored the av-services repository
+1. Launch Visual Studio Code in the folder where you stored the devlabs repository
 
     ```bash
         c:\git\devlabs\Lab1> code .
@@ -192,9 +192,52 @@ You need to install the following pre-requisite on your machine
     ![Visual Studio Code](./img/reopen-in-container.png)
 
 3. Click on the button 'Reopen in Container'
-4. Visual Studio Code will now open the devcontainer. If it's the first time you open the project in container mode, it will first build the container, it can take several minutes to build the new container.
+4. Visual Studio Code will now open the dev container. If it's the first time you open the project in container mode, it will first build the container, it can take several minutes to build the new container.
 5. Once the container is loaded, you can open a new terminal (Terminal -> New Terminal).
-6. And you have access to the tools installed in the devcontainer like az client,....
+6. And you have access to the tools installed in the dev container like az client,....
+   Check Azure CLI version:
+
+    ```bash
+        vscode ➜ /workspace $ az --version
+    ```
+
+   Check Docker version:
+
+    ```bash
+        vscode ➜ /workspace $ docker --version
+    ```
+
+   Display Dev Container :
+
+    ```bash
+        vscode ➜ /workspace $ docker ps
+    ```
+
+   Check kubectl version:
+
+    ```bash
+        vscode ➜ /workspace $ kubectl version --client --output=yaml
+    ```
+
+#### Using the dev container for all the labs
+
+As most of the subsequent labs could be run from the dev container, if you copy the folder "\git\devlabs\Lab1\.devcontainer" into "\git\devlabs", the same dev container will be available for all the labs.
+
+1. Launch Visual Studio Code in the folder where you stored the devlabs repository
+
+    ```bash
+        c:\git\devlabs> code .
+    ```
+
+2. Once Visual Studio Code is launched, you should see the following dialgog box:
+
+    ![Visual Studio Code](./img/reopen-in-container.png)
+
+3. Click on the button 'Reopen in Container'
+4. Visual Studio Code will now open the dev container. If it's the first time you open the project in container mode, it will first build the container, it can take several minutes to build the new container.
+5. Once the container is loaded, you can open a new terminal (Terminal -> New Terminal).
+6. And you have access to the tools installed in the dev container like az client,....
+   Check Azure CLI version:
 
     ```bash
         vscode ➜ /workspace $ az --version
