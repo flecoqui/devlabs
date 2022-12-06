@@ -242,3 +242,22 @@ As most of the subsequent labs could be run from the dev container, if you copy 
     ```bash
         vscode ➜ /workspace $ az --version
     ```
+
+#### Using the dev container without using Visual Studio Code
+
+It's possible to use the dev container without using Visual Studio Code.
+In that case, you will use a 'docker run' to launch a command in the dev container. 
+
+1. First, you need to build the dev container using the following command:
+
+    ```bash
+        c:\git\devlabs\Lab1>  docker build -f ./.devcontainer/Dockerfile ./.devcontainer -t devcontainer-image:latest
+    ```
+
+2. Then you run a command in the dev container, you need to run 'docker run' and add the command  at the end of the line:
+   For instance, run 'ls -l /avworkspace/.devcontainer' in the dev container:
+
+    ```bash
+        c:\git\devlabs\Lab1>  docker run   -it --rm -v c:\git\devlabs\Lab1:/avworkspace  --name devcontainer devcontainer-image:latest ls -l /avworkspace/.devcontainer
+    ```
+
