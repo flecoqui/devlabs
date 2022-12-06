@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "storageAccountName": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 24,
+        "metadata": {
+          "description": "Storage Account name."
+        }
+      },
+      "containerName": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 63,
+        "metadata": {
+          "description": "Container name."
+        }
+      }
+
+    },
+    "variables": {
+      "location": "[resourceGroup().location]",
+      "contentContainerName": "images"
+    },
+    "resources": [     
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[parameters('storageAccountName')]",
+        "apiVersion": "2019-04-01",
+        "location": "[resourceGroup().location]",
+        "sku": {
+          "name": "Standard_LRS"
+        },
+        "kind": "Storage",
+        "resources": [
+          {
+            "type": "blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "name": "[concat('default/', parameters('containerName'))]",
+            "dependsOn": [
+              "[parameters('storageAccountName')]"
+            ],
+            "properties": {
+              "publicAccess": "None"
+            }
+          }
+  
+        ]
+      }    
+    ],
+    "outputs": {
+      "storageAccount": {
+        "type": "string",
+        "value": "[parameters('StorageAccountName')]"
+      },    
+      "contentContainer": {
+        "type": "string",
+        "value": "[parameters('containerName')]"
+      }
+    }
+  }

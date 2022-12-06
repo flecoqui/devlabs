@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "computerVisionAccountName": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 24,
+        "metadata": {
+          "description": "Computer Vision Account Name"
+        }
+      },
+      "computerVisionSku": {
+        "type": "string",
+        "defaultValue": "S1",
+        "allowedValues": [
+          "S1",
+          "F0"
+        ]
+      }
+    },
+    "variables": {
+      "location": "[resourceGroup().location]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.CognitiveServices/accounts",
+        "apiVersion": "2022-03-01",
+        "name": "[parameters('computerVisionAccountName')]",
+        "location": "[variables('location')]",
+        "sku": {
+          "name": "[parameters('computerVisionsku')]"
+        },
+        "kind": "ComputerVision",
+        "properties": {
+          "apiProperties": {
+            "statisticsEnabled": false
+          }
+        }
+      }    
+    ],
+    "outputs": {
+      "ComputerVisionAccountName": {
+        "type": "string",
+        "value": "[parameters('computerVisionAccountName')]"
+      },
+      "ComputerVisionKey": {
+        "type": "string",
+        "value": "[listKeys(concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/',parameters('computerVisionAccountName')),'2022-03-01').key1]"
+      },
+      "ComputerVisionEndpoint": {
+        "type": "string",
+        "value": "[concat('https://',variables('location'),'.api.cognitive.microsoft.com/vision/v3.2/analyze?visualFeatures=Objects,Tags&details=Landmarks&language=en&model-version=latest')]"
+      }
+    }
+  }
