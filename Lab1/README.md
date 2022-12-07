@@ -261,3 +261,8 @@ In that case, you will use a 'docker run' to launch a command in the dev contain
         c:\git\devlabs\Lab1>  docker run   -it --rm -v c:\git\devlabs\Lab1:/avworkspace  --name devcontainer devcontainer-image:latest ls -l /avworkspace/.devcontainer
     ```
 
+3. For instance, run 'bash' in the dev container:
+
+    ```bash
+        c:\git\devlabs\Lab1>  docker run   -it --rm -v c:\git\devlabs\Lab1:/avworkspace  --name devcontainer devcontainer-image:latest bash
+    ```
