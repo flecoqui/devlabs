@@ -120,7 +120,13 @@ Sign in interactively:
     az account show 
 ```
 
-3. You can also display the id of the current user with the following command:
+3. If the susbcription Id (.id) is not the expected one, you can change it using the command below:
+
+```bash
+    az account set --subscription ${SUBSCRIPTION_ID} 
+```
+
+4. You can also display the id of the current user with the following command:
 
 ```bash
     az ad signed-in-user show --query id --output tsv
@@ -351,7 +357,7 @@ Sign in with a Service principal
     echo "COMPUTER_VISION_ENDPOINT: ${COMPUTER_VISION_ENDPOINT}"    
 ```
 
-6. Upload files in the container
+5. Upload files in the container
 
 ```bash
     curl -i -X POST  --data-binary "@./img/frame.jpg" "https://${AZURE_REGION}.api.cognitive.microsoft.com/vision/v3.2/analyze?visualFeatures=Objects,Tags&details=Landmarks&language=en&model-version=latest" -H "Content-Type: application/octet-stream" -H "Ocp-Apim-Subscription-Key: ${COMPUTER_VISION_KEY}"
@@ -360,7 +366,7 @@ Sign in with a Service principal
 ```
 
 
-9. Delete the resource group
+6. Delete the resource group
 
 ```bash
     az group delete  --subscription $AZURE_SUBSCRIPTION_ID  --name $AZURE_RESOURCE_GROUP 
