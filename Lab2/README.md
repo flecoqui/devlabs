@@ -15,7 +15,6 @@ During this lab, you will see how to:
 - sign in with Azure CLI,
 - use Azure CLI to create, update and remove resources deployed in Azure,
 - use Azure CLI and ARM template to deploy resources in Azure,
-- use Azure CLI and ARM template to deploy resources in Azure,
 - use Azure Cognitive Service Computer Vision.
 
 ### Prerequisites
