@@ -137,9 +137,14 @@ or
 1. Run the following commands to build a dotnet based REST API:
 
 ```bash
-    PORT_HTTP=8000
-    APP_VERSION=$(date +"%Y%m%d.%H%M%S")
-    REST_API_NAME="dotnet-web-api"
+    DOTNET_PORT_HTTP=8000
+    DOTNET_APP_VERSION=$(date +"%Y%m%d.%H%M%S")
+    DOTNET_REST_API_NAME="dotnet-rest-api"
+
+    PORT_HTTP=${DOTNET_PORT_HTTP}
+    APP_VERSION=${DOTNET_APP_VERSION}
+    REST_API_NAME=${DOTNET_REST_API_NAME}
+
     IMAGE_NAME="${REST_API_NAME}-image"
     IMAGE_TAG=${APP_VERSION}
     CONTAINER_NAME="${REST_API_NAME}-container"
@@ -200,9 +205,14 @@ or
 1. Run the following commands to build a fastapi based REST API:
 
 ```bash
-    PORT_HTTP=7000
-    APP_VERSION=$(date +"%Y%m%d.%H%M%S")
-    REST_API_NAME="fastapi-web-api"
+    FASTAPI_PORT_HTTP=7000
+    FASTAPI_APP_VERSION=$(date +"%Y%m%d.%H%M%S")
+    FASTAPI_REST_API_NAME="fastapi-rest-api"
+
+    PORT_HTTP=${FASTAPI_PORT_HTTP}
+    APP_VERSION=${FASTAPI_APP_VERSION}
+    REST_API_NAME=${FASTAPI_REST_API_NAME}
+
     IMAGE_NAME="${REST_API_NAME}-image"
     IMAGE_TAG=${APP_VERSION}
     CONTAINER_NAME="${REST_API_NAME}-container"
@@ -264,7 +274,7 @@ or
 1. Run the following command in the dev container terminal
 
 ```bash
-    cd ./Lab2
+    cd ./Lab3
     az login
 ```
     Azure CLi open the default browser to load an Azure sign-in page.
@@ -280,7 +290,7 @@ or
 ```bash
     AZURE_SUBSCRIPTION_ID=$(az account show  | jq -r .id)
     AZURE_REGION=eastus2
-    AZURE_RESOURCE_GROUP=rgtestacr$(shuf -i 1000-9999 -n 1)
+    AZURE_RESOURCE_GROUP=rgtestacraks$(shuf -i 1000-9999 -n 1)
     az group create  --subscription $AZURE_SUBSCRIPTION_ID --location $AZURE_REGION --name $AZURE_RESOURCE_GROUP 
 ```
 
@@ -303,9 +313,14 @@ or
 5. Run the following commands to build and push a dotnet based REST API:
 
 ```bash
-    PORT_HTTP=8000
-    APP_VERSION=$(date +"%Y%m%d.%H%M%S")
-    REST_API_NAME="dotnet-web-api"
+    DOTNET_PORT_HTTP=8000
+    DOTNET_APP_VERSION=$(date +"%Y%m%d.%H%M%S")
+    DOTNET_REST_API_NAME="dotnet-rest-api"
+
+    PORT_HTTP=${DOTNET_PORT_HTTP}
+    APP_VERSION=${DOTNET_APP_VERSION}
+    REST_API_NAME=${DOTNET_REST_API_NAME}
+
     IMAGE_NAME="${REST_API_NAME}-image"
     IMAGE_TAG=${APP_VERSION}
     CONTAINER_NAME="${REST_API_NAME}-container"
@@ -348,9 +363,14 @@ or
 8. Run the following commands to build and push a fastapi based REST API:
 
 ```bash
-    PORT_HTTP=7000
-    APP_VERSION=$(date +"%Y%m%d.%H%M%S")
-    REST_API_NAME="fastapi-web-api"
+    FASTAPI_PORT_HTTP=7000
+    FASTAPI_APP_VERSION=$(date +"%Y%m%d.%H%M%S")
+    FASTAPI_REST_API_NAME="fastapi-rest-api"
+
+    PORT_HTTP=${FASTAPI_PORT_HTTP}
+    APP_VERSION=${FASTAPI_APP_VERSION}
+    REST_API_NAME=${FASTAPI_REST_API_NAME}
+
     IMAGE_NAME="${REST_API_NAME}-image"
     IMAGE_TAG=${APP_VERSION}
     CONTAINER_NAME="${REST_API_NAME}-container"
@@ -396,7 +416,7 @@ or
 1. Run the following command in the dev container terminal
 
 ```bash
-    cd ./Lab2
+    cd ./Lab3
     az login
 ```
     Azure CLi open the default browser to load an Azure sign-in page.
@@ -407,13 +427,10 @@ or
     az account show 
 ```
 
-3. Create the resource group
+3. Reuse the resource group created for the Azure Container Registry
 
 ```bash
-    AZURE_SUBSCRIPTION_ID=$(az account show  | jq -r .id)
-    AZURE_REGION=eastus2
-    AZURE_RESOURCE_GROUP=rgtestaks$(shuf -i 1000-9999 -n 1)
-    az group create  --subscription $AZURE_SUBSCRIPTION_ID --location $AZURE_REGION --name $AZURE_RESOURCE_GROUP 
+    echo "Resource group: $AZURE_RESOURCE_GROUP" 
 ```
 
 4. Create the Azure Container Registry
@@ -508,18 +525,22 @@ or
     kubectl get pods -A  -o wide 
 ```
 
-### Deploy a container hosting a REST API with Kubectl 
+### Deploy a container hosting the dotnet REST API with Kubectl 
 
-1. Create the deployment
+1. Create the dotnet REST API deployment
 
 ```bash
+PORT_HTTP=${DOTNET_PORT_HTTP}
+APP_VERSION=${DOTNET_APP_VERSION}
+REST_API_NAME=${DOTNET_REST_API_NAME}
+
 echo -e "
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "${REST_API_NAME}"
+  name: ${REST_API_NAME}
   labels:
-    app: "${REST_API_NAME}"
+    app: ${REST_API_NAME}
 spec:
   replicas: 1
   selector:
@@ -549,9 +570,13 @@ spec:
     kubectl create -f deployment-dotnet-rest-api.yaml
 ```
 
-2. Create the service
+2. Create the dotnet REST API service
 
 ```bash
+PORT_HTTP=${DOTNET_PORT_HTTP}
+APP_VERSION=${DOTNET_APP_VERSION}
+REST_API_NAME=${DOTNET_REST_API_NAME}
+
 echo -e "
 apiVersion: v1
 kind: Service
@@ -566,7 +591,7 @@ spec:
     protocol: TCP
     targetPort: ${PORT_HTTP}              
   selector:
-    app: "${REST_API_NAME}"   
+    app: ${REST_API_NAME}   
 " | kubectl apply -f -
 
 ```
@@ -605,13 +630,131 @@ spec:
     curl http://localhost:3000/time
 ```
 
-7. Delete service
+7. Delete dotnet REST API service
 
 ```bash
     kubectl delete  svc "${REST_API_NAME}"
 ```
 
-8. Delete deployment
+8. Delete dotnet REST API deployment
+
+```bash
+    kubectl delete  deploy "${REST_API_NAME}"
+```
+
+
+### Deploy a container hosting the fastapi REST API with Kubectl 
+
+1. Create the fastapi REST API deployment
+
+```bash
+PORT_HTTP=${FASTAPI_PORT_HTTP}
+APP_VERSION=${FASTAPI_APP_VERSION}
+REST_API_NAME=${FASTAPI_REST_API_NAME}
+
+echo -e "
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${REST_API_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${REST_API_NAME}
+    spec:
+      containers:
+      - name: ${REST_API_NAME}
+        image: ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG}
+        env:
+        - name: PORT_HTTP
+          value: \"${PORT_HTTP}\"
+        - name: APP_ENVIRONMENT
+          value: \"${APP_ENVIRONMENT}\"        
+        - name: APP_VERSION
+          value: \"${APP_VERSION}\"    
+" | kubectl apply -f -
+
+```
+  you can also use the commands below to create the deployment:
+```bash
+    kubectl create deploy fastapi-rest-api --image=testacr5012.azurecr.io/fastapi-web-api-image:latest
+    kubectl create -f deployment-fastapi-rest-api.yaml
+```
+
+2. Create the fastapi REST API service
+
+```bash
+PORT_HTTP=${FASTAPI_PORT_HTTP}
+APP_VERSION=${FASTAPI_APP_VERSION}
+REST_API_NAME=${FASTAPI_REST_API_NAME}
+
+echo -e "
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: ${PORT_HTTP}              
+  selector:
+    app: ${REST_API_NAME}   
+" | kubectl apply -f -
+
+```
+
+  you can also use the commands below to create the service:
+```bash
+    kubectl expose deploy fastapi-rest-api --type=ClusterIP --port=8000
+    kubectl create -f service-fastapi-rest-api.yaml
+```
+
+3. Check the pod status
+
+```bash
+    kubectl get pods -A
+    kubectl describe pods <podname>
+```
+
+4. Get the logs associated with pod
+
+```bash
+    kubectl logs <podname>
+```
+
+5. Connect the local kubectl with your pod
+
+```bash
+    kubectl port-forward <podname> 3000:${PORT_HTTP}
+```
+
+6. Test the REST API with your browser
+
+```bash
+    curl http://localhost:3000/version
+```
+```bash
+    curl http://localhost:3000/time
+```
+
+7. Delete fastapi REST API service
+
+```bash
+    kubectl delete  svc "${REST_API_NAME}"
+```
+
+8. Delete fastapi REST API deployment
 
 ```bash
     kubectl delete  deploy "${REST_API_NAME}"
