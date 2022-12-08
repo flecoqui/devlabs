@@ -219,7 +219,7 @@ or
 
 ```bash
     docker run -d -e ARG_PORT_HTTP=${PORT_HTTP} -e APP_ENVIRONMENT=${APP_ENVIRONMENT} -e APP_VERSION=${IMAGE_TAG} -p ${PORT_HTTP}:${PORT_HTTP}/tcp  --rm --name ${CONTAINER_NAME}    ${IMAGE_NAME}:${ALTERNATIVE_TAG} 
-    echo "open http://localhost:${PORT_HTTP}/swagger/index.html with your browser"
+    echo "open http://localhost:${PORT_HTTP}/docs with your browser"
 ```
 
 3. Test the container running a fastapi based REST API from the dev container:
@@ -323,6 +323,7 @@ or
 6. Run the following commands to pull and run the container running a dotnet based REST API:
 
 ```bash
+    docker pull ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG}
     docker run -d -e ARG_PORT_HTTP=${PORT_HTTP} -e APP_ENVIRONMENT=${APP_ENVIRONMENT} -e APP_VERSION=${IMAGE_TAG} -p ${PORT_HTTP}:${PORT_HTTP}/tcp  --rm --name ${CONTAINER_NAME}    ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG} 
     echo "open http://localhost:${PORT_HTTP}/swagger/index.html with your browser"
 ```
@@ -367,8 +368,9 @@ or
 9. Run the following commands to pull and run the container running a fastapi based REST API:
 
 ```bash
+    docker pull ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG}
     docker run -d -e ARG_PORT_HTTP=${PORT_HTTP} -e APP_ENVIRONMENT=${APP_ENVIRONMENT} -e APP_VERSION=${IMAGE_TAG} -p ${PORT_HTTP}:${PORT_HTTP}/tcp  --rm --name ${CONTAINER_NAME}    ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG} 
-    echo "open http://localhost:${PORT_HTTP}/swagger/index.html with your browser"
+    echo "open http://localhost:${PORT_HTTP}/docs with your browser"
 ```
 
 10. Run the following commands to stop the container running a fastapi based REST API:
