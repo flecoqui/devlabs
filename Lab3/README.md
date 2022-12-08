@@ -378,7 +378,6 @@ or
 ```
 
 
-
 ### Deploy Azure Kubernetes Service 
 
 1. Run the following command in the dev container terminal
@@ -440,4 +439,79 @@ or
     AKS_FQDN=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" -n "$POST_DEPLOYMENT_NAME" | jq -r '.properties.outputs.controlPlaneFQDN.value')
     echo "AKS dns name: $AKS_FQDN"
 ```
+
+
+
+5. Link AKS Cluster with Azure Container Registry
+
+```bash
+    az aks update -n "${AKS_NAME}cluster" -g "${AZURE_RESOURCE_GROUP}" --attach-acr "${ACR_NAME}"
+```
+
+### Using Kubectl  
+
+1. Link kubectl with the new AKS Cluster
+
+```bash
+    az aks get-credentials --name "${AKS_NAME}cluster" --overwrite-existing --resource-group "$AZURE_RESOURCE_GROUP"
+    kubectl config view
+```
+
+2. Get the list of default services 
+
+```bash
+    kubectl get services
+```
+
+3. Get the list of default services 
+
+```bash
+    kubectl get services    
+```
+
+4. Get the list of default services 
+
+```bash
+    kubectl get services --all-namespaces    
+    kubectl get services -A
+```
+
+5. Get the list of default pods 
+
+```bash
+    kubectl get pods 
+```
+
+6. Get the list of default pods with details 
+
+```bash
+    kubectl get pods -o wide
+```
+
+7. Get the list of all pods with details  
+
+```bash
+    kubectl get pods --all-namespaces  -o wide  
+    kubectl get pods -A  -o wide 
+```
+
+
+kubectl create deploy dotnet-rest-api --image=testacr5012.azurecr.io/dotnet-web-api-image:latest
+
+kubectl expose deploy dotnet-rest-api --type=ClusterIP --port=8000
+
+kubectl logs <podname>
+kubectl describe pods <podname>
+
+kubectl get pods -A
+
+kubectl port-forward <podname> 3000:8000
+
+curl http://localhost:3000/version
+
+kubectl create -f ingress-dotnet-rest-api.yaml
+kubectl get ing -A
+
+kubectl delete  deploy dotnet-rest-api
+kubectl delete  svc dotnet-rest-api
 

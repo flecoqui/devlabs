@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-rest-api
+  labels:
+    app: dotnet-rest-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dotnet-rest-api
+  template:
+    metadata:
+      labels:
+        app: dotnet-rest-api
+    spec:
+      containers:
+      - name: dotnet-rest-api
+        image: testacr4917.azurecr.io/dotnet-rest-api
