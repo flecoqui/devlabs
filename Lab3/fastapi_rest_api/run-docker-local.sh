@@ -22,4 +22,4 @@ if [[ ${result} == "[]" ]]; then
     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${ALTERNATIVE_TAG}
     #docker push ${IMAGE_NAME}:${ALTERNATIVE_TAG}
 fi
-docker run -d -e ARG_PORT_HTTP=${PORT_HTTP}  -e APP_VERSION=${IMAGE_TAG} -p ${PORT_HTTP}:${PORT_HTTP}/tcp --rm --name ${CONTAINER_NAME}  ${IMAGE_NAME}:${ALTERNATIVE_TAG}  
+docker run -d -e PORT_HTTP=${PORT_HTTP}  -e APP_VERSION=${IMAGE_TAG} -p ${PORT_HTTP}:${PORT_HTTP}/tcp --rm --name ${CONTAINER_NAME}  ${IMAGE_NAME}:${ALTERNATIVE_TAG}  

@@ -52,7 +52,7 @@ Below a list of useful docker commands:
 
 2. Run ubuntu docker image :
 ```bash
-    docker run -it ubuntu bash    
+    docker run --name ubuntu  -it ubuntu bash    
 ```
 3. Enter 'exit' to leave ubuntu bash
 
@@ -129,7 +129,7 @@ or
     Check the /lab3 folder in the container is associated with the devLabs/Lab3 folder in the host machine.
 16. Remove the volume on the host machine  
 ```bash
-    docker volume rm --name test_volume 
+    docker volume rm test_volume 
 ```
 
 ### Building and running Docker image hosting dotnet based REST API locally
@@ -189,6 +189,11 @@ or
       echo "Deployment failed Container running version ${VERSION} instead of ${APP_VERSION}"
     fi
 ```
+5. Stop the container running a dotnet based REST API :
+
+```bash
+    docker stop ${CONTAINER_NAME}
+```
 
 ### Building and running Docker image hosting fastapi based REST API locally
 
@@ -246,6 +251,12 @@ or
     else
       echo "Deployment failed Container running version ${VERSION} instead of ${APP_VERSION}"
     fi
+```
+
+5. Stop the container running a fastapi based REST API :
+
+```bash
+    docker stop ${CONTAINER_NAME}
 ```
 
 ### Deploy Azure Container Registry pull and pull image with Azure CLI
