@@ -497,23 +497,111 @@ or
     kubectl get pods -A  -o wide 
 ```
 
+### Deploy a container hosting a REST API with Kubectl 
 
-kubectl create deploy dotnet-rest-api --image=testacr5012.azurecr.io/dotnet-web-api-image:latest
+1. Create the deployment
 
-kubectl expose deploy dotnet-rest-api --type=ClusterIP --port=8000
+```bash
+echo -e "
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "${REST_API_NAME}"
+  labels:
+    app: "${REST_API_NAME}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${REST_API_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${REST_API_NAME}
+    spec:
+      containers:
+      - name: ${REST_API_NAME}
+        image: ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG}
+        env:
+        - name: PORT_HTTP
+          value: \"${PORT_HTTP}\"
+        - name: APP_ENVIRONMENT
+          value: \"${APP_ENVIRONMENT}\"        
+        - name: APP_VERSION
+          value: \"${APP_VERSION}\"    
+" | kubectl apply -f -
 
-kubectl logs <podname>
-kubectl describe pods <podname>
+```
+  you can also use the commands below to create the deployment:
+```bash
+    kubectl create deploy dotnet-rest-api --image=testacr5012.azurecr.io/dotnet-web-api-image:latest
+    kubectl create -f deployment-dotnet-rest-api.yaml
+```
 
-kubectl get pods -A
+2. Create the service
 
-kubectl port-forward <podname> 3000:8000
+```bash
+echo -e "
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: ${PORT_HTTP}              
+  selector:
+    app: "${REST_API_NAME}"   
+" | kubectl apply -f -
 
-curl http://localhost:3000/version
+```
 
-kubectl create -f ingress-dotnet-rest-api.yaml
-kubectl get ing -A
+  you can also use the commands below to create the service:
+```bash
+    kubectl expose deploy dotnet-rest-api --type=ClusterIP --port=8000
+    kubectl create -f service-dotnet-rest-api.yaml
+```
 
-kubectl delete  deploy dotnet-rest-api
-kubectl delete  svc dotnet-rest-api
+3. Check the pod status
 
+```bash
+    kubectl get pods -A
+    kubectl describe pods <podname>
+```
+
+4. Get the logs associated with pod
+
+```bash
+    kubectl logs <podname>
+```
+
+5. Connect the local kubectl with your pod
+
+```bash
+    kubectl port-forward <podname> 3000:${PORT_HTTP}
+```
+
+6. Test the REST API with your browser
+
+```bash
+    curl http://localhost:3000/version
+```
+```bash
+    curl http://localhost:3000/time
+```
+
+7. Delete service
+
+```bash
+    kubectl delete  svc "${REST_API_NAME}"
+```
+
+8. Delete deployment
+
+```bash
+    kubectl delete  deploy "${REST_API_NAME}"
+```

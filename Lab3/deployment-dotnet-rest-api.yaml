@@ -1,19 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dotnet-rest-api
+  name: "${REST_API_NAME}"
   labels:
-    app: dotnet-rest-api
+    app: "${REST_API_NAME}"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dotnet-rest-api
+      app: "${REST_API_NAME}"
   template:
     metadata:
       labels:
-        app: dotnet-rest-api
+        app: "${REST_API_NAME}"
     spec:
       containers:
-      - name: dotnet-rest-api
-        image: testacr4917.azurecr.io/dotnet-rest-api
+      - name: "${REST_API_NAME}"
+        image: "${ACR_LOGIN_SERVER}"/"${IMAGE_NAME}":"${ALTERNATIVE_TAG}"
+        env:
+        - name: PORT_HTTP
+          value: "${PORT_HTTP}"
+        - name: APP_ENVIRONMENT
+          value: "${APP_ENVIRONMENT}"        
+        - name: APP_VERSION
+          value: "${APP_VERSION}"        
