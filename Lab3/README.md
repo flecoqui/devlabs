@@ -277,7 +277,8 @@ or
     cd ./Lab3
     az login
 ```
-    Azure CLi open the default browser to load an Azure sign-in page.
+
+Azure CLi open the default browser to load an Azure sign-in page.
 
 2. Once connected, run the following command to display the Azure Subcription Id and the Tenant Id:
 
@@ -433,7 +434,7 @@ or
     echo "Resource group: $AZURE_RESOURCE_GROUP" 
 ```
 
-4. Create the Azure Container Registry
+4. Create the Azure Kubernetes Service
 
 ```bash
     AKS_NAME=testaks$(shuf -i 1000-9999 -n 1)
@@ -493,32 +494,26 @@ or
     kubectl get services
 ```
 
-3. Get the list of default services 
-
-```bash
-    kubectl get services    
-```
-
-4. Get the list of default services 
+3. Get the list of all services 
 
 ```bash
     kubectl get services --all-namespaces    
     kubectl get services -A
 ```
 
-5. Get the list of default pods 
+4. Get the list of default pods 
 
 ```bash
     kubectl get pods 
 ```
 
-6. Get the list of default pods with details 
+5. Get the list of default pods with details 
 
 ```bash
     kubectl get pods -o wide
 ```
 
-7. Get the list of all pods with details  
+6. Get the list of all pods with details  
 
 ```bash
     kubectl get pods --all-namespaces  -o wide  
@@ -566,9 +561,15 @@ spec:
 ```
   you can also use the commands below to create the deployment:
 ```bash
-    kubectl create deploy dotnet-rest-api --image=testacr5012.azurecr.io/dotnet-web-api-image:latest
+    kubectl create deploy dotnet-rest-api --image=${ACR_NAME}.azurecr.io/dotnet-rest-api-image:latest
     kubectl create -f deployment-dotnet-rest-api.yaml
 ```
+
+  you can check if the deployment is present:
+```bash
+    kubectl get deployments -A
+```
+
 
 2. Create the dotnet REST API service
 
@@ -602,23 +603,29 @@ spec:
     kubectl create -f service-dotnet-rest-api.yaml
 ```
 
-3. Check the pod status
+  you can check if the service is present:
+```bash
+    kubectl get services -A    
+```
+
+3. Check the pod status and pod name
 
 ```bash
     kubectl get pods -A
-    kubectl describe pods <podname>
+    DOTNET_REST_API_POD=$(kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.name | test("${DOTNET_REST_API_NAME}")).metadata.name')
+    kubectl describe pods "${DOTNET_REST_API_POD}"
 ```
 
 4. Get the logs associated with pod
 
 ```bash
-    kubectl logs <podname>
+    kubectl logs ${DOTNET_REST_API_POD}
 ```
 
 5. Connect the local kubectl with your pod
 
 ```bash
-    kubectl port-forward <podname> 3000:${PORT_HTTP}
+    kubectl port-forward ${DOTNET_REST_API_POD} 3000:${PORT_HTTP}
 ```
 
 6. Test the REST API with your browser
