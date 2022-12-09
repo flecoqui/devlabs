@@ -871,10 +871,11 @@ spec:
     cmd="kubectl get services -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${DOTNET_REST_API_NAME}\")).status.loadBalancer.ingress[0].ip'"
     DOTNET_REST_API_PUBLIC_IP=$(eval "$cmd")
     echo "Public IP address: ${DOTNET_REST_API_PUBLIC_IP}"
-    DOTNET_REST_API_PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${DOTNET_REST_API_PUBLIC_IP}')].[id]" --output tsv)
+    AKS_RESOURCE_GROUP=$(az aks show --name "${AKS_NAME}cluster" --resource-group "${AZURE_RESOURCE_GROUP}" | jq -r '.nodeResourceGroup')
+    DOTNET_REST_API_PUBLIC_IP_ID=$(az network public-ip list -g ${AKS_RESOURCE_GROUP} --query "[?ipAddress!=null]|[?contains(ipAddress, '${DOTNET_REST_API_PUBLIC_IP}')].[id]" --output tsv)
     az network public-ip update --ids ${DOTNET_REST_API_PUBLIC_IP_ID} --dns-name ${AKS_NAME}
 
-    DOTNET_REST_API_PUBLIC_DNS_NAME=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${DOTNET_REST_API_PUBLIC_IP}')].[dnsSettings.fqdn]" --output tsv)
+    DOTNET_REST_API_PUBLIC_DNS_NAME=$(az network public-ip list -g ${AKS_RESOURCE_GROUP} --query "[?ipAddress!=null]|[?contains(ipAddress, '${DOTNET_REST_API_PUBLIC_IP}')].[dnsSettings.fqdn]" --output tsv)
 ```
 
 4. Check the pod status and pod name
@@ -1009,10 +1010,11 @@ spec:
     cmd="kubectl get services -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${FASTAPI_REST_API_NAME}\")).status.loadBalancer.ingress[0].ip'"
     FASTAPI_REST_API_PUBLIC_IP=$(eval "$cmd")
     echo "Public IP address: ${FASTAPI_REST_API_PUBLIC_IP}"
-    FASTAPI_REST_API_PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${FASTAPI_REST_API_PUBLIC_IP}')].[id]" --output tsv)
+    AKS_RESOURCE_GROUP=$(az aks show --name "${AKS_NAME}cluster" --resource-group "${AZURE_RESOURCE_GROUP}" | jq -r '.nodeResourceGroup')
+    FASTAPI_REST_API_PUBLIC_IP_ID=$(az network public-ip list -g ${AKS_RESOURCE_GROUP} --query "[?ipAddress!=null]|[?contains(ipAddress, '${FASTAPI_REST_API_PUBLIC_IP}')].[id]" --output tsv)
     az network public-ip update --ids ${FASTAPI_REST_API_PUBLIC_IP_ID} --dns-name ${AKS_NAME}
 
-    FASTAPI_REST_API_PUBLIC_DNS_NAME=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${FASTAPI_REST_API_PUBLIC_IP}')].[dnsSettings.fqdn]" --output tsv)
+    FASTAPI_REST_API_PUBLIC_DNS_NAME=$(az network public-ip list -g ${AKS_RESOURCE_GROUP} --query "[?ipAddress!=null]|[?contains(ipAddress, '${FASTAPI_REST_API_PUBLIC_IP}')].[dnsSettings.fqdn]" --output tsv)
 ```
 
 4. Check the pod status and pod name
@@ -1039,8 +1041,8 @@ spec:
 ```bash
     curl http://${FASTAPI_REST_API_PUBLIC_DNS_NAME}/time
 ```
-
-7. Delete fastapi REST API service
+    kubectl delete  deploy "${REST_API_NAME}"
+7. Delete fastapi REST API service    kubectl delete  deploy "${REST_API_NAME}"
 
 ```bash
     kubectl delete  svc "${REST_API_NAME}"
