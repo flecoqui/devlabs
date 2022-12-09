@@ -612,7 +612,8 @@ spec:
 
 ```bash
     kubectl get pods -A
-    DOTNET_REST_API_POD=$(kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.name | test("${DOTNET_REST_API_NAME}")).metadata.name')
+    cmd="kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${DOTNET_REST_API_NAME}\")).metadata.name'"
+    DOTNET_REST_API_POD=$(eval "$cmd")
     kubectl describe pods "${DOTNET_REST_API_POD}"
 ```
 
@@ -691,8 +692,13 @@ spec:
 ```
   you can also use the commands below to create the deployment:
 ```bash
-    kubectl create deploy fastapi-rest-api --image=testacr5012.azurecr.io/fastapi-web-api-image:latest
+    kubectl create deploy fastapi-rest-api --image=${ACR_NAME}.azurecr.io/fastapi-web-api-image:latest
     kubectl create -f deployment-fastapi-rest-api.yaml
+```
+
+  you can check if the deployment is present:
+```bash
+    kubectl get deployments -A
 ```
 
 2. Create the fastapi REST API service
@@ -731,19 +737,21 @@ spec:
 
 ```bash
     kubectl get pods -A
-    kubectl describe pods <podname>
+    cmd="kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${FASTAPI_REST_API_NAME}\")).metadata.name'"
+    FASTAPI_REST_API_POD=$(eval "$cmd")
+    kubectl describe pods "${FASTAPI_REST_API_POD}"
 ```
 
 4. Get the logs associated with pod
 
 ```bash
-    kubectl logs <podname>
+    kubectl logs ${FASTAPI_REST_API_POD}
 ```
 
 5. Connect the local kubectl with your pod
 
 ```bash
-    kubectl port-forward <podname> 3000:${PORT_HTTP}
+    kubectl port-forward ${FASTAPI_REST_API_POD} 3000:${PORT_HTTP}
 ```
 
 6. Test the REST API with your browser
@@ -766,3 +774,281 @@ spec:
 ```bash
     kubectl delete  deploy "${REST_API_NAME}"
 ```
+
+
+### Deploy a container hosting the dotnet REST API with public access  
+
+1. Create the dotnet REST API deployment
+
+```bash
+PORT_HTTP=${DOTNET_PORT_HTTP}
+APP_VERSION=${DOTNET_APP_VERSION}
+REST_API_NAME=${DOTNET_REST_API_NAME}
+
+echo -e "
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${REST_API_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${REST_API_NAME}
+    spec:
+      containers:
+      - name: ${REST_API_NAME}
+        image: ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG}
+        env:
+        - name: PORT_HTTP
+          value: \"${PORT_HTTP}\"
+        - name: APP_ENVIRONMENT
+          value: \"${APP_ENVIRONMENT}\"        
+        - name: APP_VERSION
+          value: \"${APP_VERSION}\"    
+" | kubectl apply -f -
+
+```
+  you can also use the commands below to create the deployment:
+```bash
+    kubectl create deploy dotnet-rest-api --image=${ACR_NAME}.azurecr.io/dotnet-rest-api-image:latest
+    kubectl create -f deployment-dotnet-rest-api.yaml
+```
+
+  you can check if the deployment is present:
+```bash
+    kubectl get deployments -A
+```
+
+
+2. Create the dotnet REST API service
+
+```bash
+PORT_HTTP=${DOTNET_PORT_HTTP}
+APP_VERSION=${DOTNET_APP_VERSION}
+REST_API_NAME=${DOTNET_REST_API_NAME}
+
+echo -e "
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: ${PORT_HTTP}              
+  selector:
+    app: ${REST_API_NAME}   
+" | kubectl apply -f -
+
+```
+
+  you can also use the commands below to create the service:
+```bash
+    kubectl expose deploy dotnet-rest-api --type=ClusterIP --port=8000
+    kubectl create -f service-dotnet-rest-api.yaml
+```
+
+  you can check if the service is present:
+```bash
+    kubectl get services -A   
+```
+
+
+3. Get Public IP address of the services and the dns name
+
+```bash
+    cmd="kubectl get services -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${DOTNET_REST_API_NAME}\")).status.loadBalancer.ingress[0].ip'"
+    DOTNET_REST_API_PUBLIC_IP=$(eval "$cmd")
+    echo "Public IP address: ${DOTNET_REST_API_PUBLIC_IP}"
+    DOTNET_REST_API_PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${DOTNET_REST_API_PUBLIC_IP}')].[id]" --output tsv)
+    az network public-ip update --ids ${DOTNET_REST_API_PUBLIC_IP_ID} --dns-name ${AKS_NAME}
+
+    DOTNET_REST_API_PUBLIC_DNS_NAME=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${DOTNET_REST_API_PUBLIC_IP}')].[dnsSettings.fqdn]" --output tsv)
+```
+
+4. Check the pod status and pod name
+
+```bash
+    kubectl get pods -A
+    cmd="kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${DOTNET_REST_API_NAME}\")).metadata.name'"
+    DOTNET_REST_API_POD=$(eval "$cmd")
+    kubectl describe pods "${DOTNET_REST_API_POD}"
+```
+
+5. Get the logs associated with pod
+
+```bash
+    kubectl logs ${DOTNET_REST_API_POD}
+```
+
+
+6. Test the REST API with your browser
+
+```bash
+    curl http://${DOTNET_REST_API_PUBLIC_DNS_NAME}/version
+```
+```bash
+    curl http://${DOTNET_REST_API_PUBLIC_DNS_NAME}/time
+```
+
+7. Delete dotnet REST API service
+
+```bash
+    kubectl delete  svc "${REST_API_NAME}"
+```
+
+8. Delete dotnet REST API deployment
+
+```bash
+    kubectl delete  deploy "${REST_API_NAME}"
+```
+
+### Deploy a container hosting the fastapi REST API with public access  
+
+1. Create the fastapi REST API deployment
+
+```bash
+PORT_HTTP=${FASTAPI_PORT_HTTP}
+APP_VERSION=${FASTAPI_APP_VERSION}
+REST_API_NAME=${FASTAPI_REST_API_NAME}
+
+echo -e "
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${REST_API_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${REST_API_NAME}
+    spec:
+      containers:
+      - name: ${REST_API_NAME}
+        image: ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${ALTERNATIVE_TAG}
+        env:
+        - name: PORT_HTTP
+          value: \"${PORT_HTTP}\"
+        - name: APP_ENVIRONMENT
+          value: \"${APP_ENVIRONMENT}\"        
+        - name: APP_VERSION
+          value: \"${APP_VERSION}\"    
+" | kubectl apply -f -
+
+```
+  you can also use the commands below to create the deployment:
+```bash
+    kubectl create deploy fastapi-rest-api --image=${ACR_NAME}.azurecr.io/fastapi-rest-api-image:latest
+    kubectl create -f deployment-fastapi-rest-api.yaml
+```
+
+  you can check if the deployment is present:
+```bash
+    kubectl get deployments -A
+```
+
+
+2. Create the fastapi REST API service
+
+```bash
+PORT_HTTP=${FASTAPI_PORT_HTTP}
+APP_VERSION=${FASTAPI_APP_VERSION}
+REST_API_NAME=${FASTAPI_REST_API_NAME}
+
+echo -e "
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${REST_API_NAME}
+  labels:
+    app: ${REST_API_NAME}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: ${PORT_HTTP}              
+  selector:
+    app: ${REST_API_NAME}   
+" | kubectl apply -f -
+
+```
+
+  you can also use the commands below to create the service:
+```bash
+    kubectl expose deploy fastapi-rest-api --type=ClusterIP --port=8000
+    kubectl create -f service-fastapi-rest-api.yaml
+```
+
+  you can check if the service is present:
+```bash
+    kubectl get services -A   
+```
+
+
+3. Get Public IP address of the services and the dns name
+
+```bash
+    cmd="kubectl get services -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${FASTAPI_REST_API_NAME}\")).status.loadBalancer.ingress[0].ip'"
+    FASTAPI_REST_API_PUBLIC_IP=$(eval "$cmd")
+    echo "Public IP address: ${FASTAPI_REST_API_PUBLIC_IP}"
+    FASTAPI_REST_API_PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${FASTAPI_REST_API_PUBLIC_IP}')].[id]" --output tsv)
+    az network public-ip update --ids ${FASTAPI_REST_API_PUBLIC_IP_ID} --dns-name ${AKS_NAME}
+
+    FASTAPI_REST_API_PUBLIC_DNS_NAME=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${FASTAPI_REST_API_PUBLIC_IP}')].[dnsSettings.fqdn]" --output tsv)
+```
+
+4. Check the pod status and pod name
+
+```bash
+    kubectl get pods -A
+    cmd="kubectl get pods -A -o json | jq -r '.items[] | select(.metadata.name | test(\"${FASTAPI_REST_API_NAME}\")).metadata.name'"
+    FASTAPI_REST_API_POD=$(eval "$cmd")
+    kubectl describe pods "${FASTAPI_REST_API_POD}"
+```
+
+5. Get the logs associated with pod
+
+```bash
+    kubectl logs ${FASTAPI_REST_API_POD}
+```
+
+
+6. Test the REST API with your browser
+
+```bash
+    curl http://${FASTAPI_REST_API_PUBLIC_DNS_NAME}/version
+```
+```bash
+    curl http://${FASTAPI_REST_API_PUBLIC_DNS_NAME}/time
+```
+
+7. Delete fastapi REST API service
+
+```bash
+    kubectl delete  svc "${REST_API_NAME}"
+```
+
+8. Delete fastapi REST API deployment
+
+```bash
+    kubectl delete  deploy "${REST_API_NAME}"
+```
+
